@@ -1,0 +1,107 @@
+// ChocolateGuideApp.jsx
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
+const flow = {
+  start: "q1",
+  questions: {
+    q1: {
+      text: "What kind of chocolate do you usually enjoy?",
+      options: [
+        { label: "Dark 🍫", next: "q2_dark" },
+        { label: "Milk 🥛", next: "q2_milk" },
+        { label: "White 🤍", next: "q2_white" },
+      ],
+    },
+    q2_dark: {
+      text: "How intense do you like your cocoa flavor?",
+      options: [
+        { label: "70%", result: "Midnight Mild Bar" },
+        { label: "85%", result: "Midnight Intense Bar" },
+        { label: "99%", result: "Pure Noir Bar" },
+      ],
+    },
+    q2_milk: {
+      text: "What’s your ideal sweetness level?",
+      options: [
+        { label: "Lightly sweet", result: "Velvet Smooth Bar" },
+        { label: "Classic milk", result: "Golden Melt Bar" },
+        { label: "Caramel-filled", result: "Golden Bliss Bar" },
+      ],
+    },
+    q2_white: {
+      text: "What kind of twist do you prefer?",
+      options: [
+        { label: "Strawberry", result: "Berry Dream Bar" },
+        { label: "Vanilla", result: "Snowy Velvet Bar" },
+        { label: "Cookies & cream", result: "Dreamy Crunch Bar" },
+      ],
+    },
+  },
+};
+
+export default function ChocolateGuideApp() {
+  const [current, setCurrent] = useState(flow.start);
+  const [result, setResult] = useState(null);
+
+  const handleSelect = (option) => {
+    if (option.result) {
+      setResult(option.result);
+    } else if (option.next) {
+      setCurrent(option.next);
+    }
+  };
+
+  const reset = () => {
+    setCurrent(flow.start);
+    setResult(null);
+  };
+
+  return (
+    <div className="flex flex-col justify-center items-center h-screen w-screen bg-white text-gray-800 font-sans p-8 max-w-[1080px] mx-auto">
+      <AnimatePresence mode="wait">
+        {!result ? (
+          <motion.div
+            key={current}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -30 }}
+            transition={{ duration: 0.4 }}
+            className="w-full text-center"
+          >
+            <h1 className="text-2xl font-semibold mb-8">{flow.questions[current].text}</h1>
+            <div className="flex flex-col gap-4">
+              {flow.questions[current].options.map((opt, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleSelect(opt)}
+                  className="py-4 px-6 bg-gray-100 rounded-2xl shadow-sm hover:bg-gray-200 transition text-lg"
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="result"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -30 }}
+            transition={{ duration: 0.4 }}
+            className="text-center"
+          >
+            <h1 className="text-3xl font-bold mb-4">Your perfect chocolate is...</h1>
+            <p className="text-2xl mb-8 text-brown-600">{result}</p>
+            <button
+              onClick={reset}
+              className="py-3 px-8 bg-gray-100 rounded-2xl shadow-sm hover:bg-gray-200 transition text-lg"
+            >
+              Start Again
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
